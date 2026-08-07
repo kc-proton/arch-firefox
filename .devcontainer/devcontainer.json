@@ -1,31 +1,31 @@
 {
   "name": "Arch Linux Firefox Compiler Env",
-  // 1. Pull the official base image from Docker Hub
   "image": "docker.io/archlinux:base",
 
   "settings": {
     "terminal.integrated.defaultProfile.linux": "bash"
   },
 
-  // 2. Instruct Codespaces to drop you into the terminal as the safe vscode user
+  // 1. Boot as root to prevent lifecycle crashes, then let Codespaces map the user
+  "containerUser": "root",
   "remoteUser": "vscode",
 
-  // 3. Elevated container privileges required to map the virtual swap space
+  // 2. Grant kernel execution rights to mount the virtual swap space safely
   "runArgs": [
     "--privileged"
   ],
 
-  // 4. Run early system setups as root before dropping down to the vscode user
-  "onCreateCommand": "echo 'Server=https://archive.archlinux.org/repos/2026/08/04/$repo/os/$arch' > /etc/pacman.d/mirrorlist && pacman -Syyuu --noconfirm && pacman -S --noconfirm base-devel git sudo shadow && useradd -m -s /bin/bash vscode && echo 'vscode ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers",
-
-  // 5. Establish compilation rules and build the swapfile safely
-  "postCreateCommand": "sudo sh -c 'echo \"MAKEFLAGS=\\\"-j2\\\"\" >> /etc/makepkg.conf' && sudo sh -c 'echo \"COMPRESSXZ=(xz -c -z --threads=2 -)\" >> /etc/makepkg.conf' && sudo dd if=/dev/zero of=/tmp/swapfile bs=1M count=4096 && sudo chmod 600 /tmp/swapfile && sudo mkswap /tmp/swapfile",
-
-  // 6. Mount and activate the fallback swapfile automatically on startup
-  "postStartCommand": "sudo swapon /tmp/swapfile || true",
+  // 3. Create the user profile first so the engine matches the passwd table entries
+  "initializeCommand": "",
   
-   
+  // 4. Primary system configuration executed seamlessly before workspace access
+  "onCreateCommand": "useradd -m -s /bin/bash vscode && echo 'vscode ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && echo 'Server=https://archive.archlinux.org/repos/2026/08/04/$repo/os/$arch' > /etc/pacman.d/mirrorlist && pacman -Syy --noconfirm && pacman -S --noconfirm base-devel git sudo shadow",
 
+  // 5. Build constraints and stable swap file assignment inside the /tmp mount volume
+  "postCreateCommand": "echo 'MAKEFLAGS=\"-j2\"' >> /etc/makepkg.conf && echo 'COMPRESSXZ=(xz -c -z --threads=2 -)' >> /etc/makepkg.conf && dd if=/dev/zero of=/tmp/swapfile bs=1M count=4096 && chmod 600 /tmp/swapfile && mkswap /tmp/swapfile",
+
+  // 6. Mount and activate the virtual memory space automatically on instance bootup
+  "postStartCommand": "swapon /tmp/swapfile || true",
   
   "features": {}
 }
