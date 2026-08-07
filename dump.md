@@ -42,5 +42,18 @@ ac_add_options --enable-release
 # Throttle the Rust compiler to handle code structures sequentially 
 export RUSTFLAGS="-C codegen-units=2 -C debuginfo=0 -C opt-level=2"
 ```
+```
+# Force the system profile to discard debug symbols and throttle threads
+echo 'export RUSTFLAGS="-C codegen-units=2 -C debuginfo=0 -C opt-level=2"' >> /etc/profile
+echo 'export MOZ_DEBUG_FLAGS="-g0"' >> /etc/profile
 
+# Source the configuration immediately
+source /etc/profile
+
+```
+```
+# Add clean production parameters directly into the PKGBUILD script file
+sed -i '/ac_add_options --enable-release/a \  ac_add_options --disable-debug\n  ac_add_options --disable-tests' PKGBUILD
+
+```
 
