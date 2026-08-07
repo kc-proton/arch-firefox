@@ -6,17 +6,14 @@
     "terminal.integrated.defaultProfile.linux": "bash"
   },
 
-  // 1. Boot as root to prevent lifecycle crashes, then let Codespaces map the user
-  "containerUser": "root",
-  "remoteUser": "vscode",
+
 
   // 2. Grant kernel execution rights to mount the virtual swap space safely
   "runArgs": [
     "--privileged"
   ],
 
-  // 3. Create the user profile first so the engine matches the passwd table entries
-  "initializeCommand": "",
+ 
   
   // 4. Primary system configuration executed seamlessly before workspace access
   "onCreateCommand": "useradd -m -s /bin/bash vscode && echo 'vscode ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && echo 'Server=https://archive.archlinux.org/repos/2026/08/04/$repo/os/$arch' > /etc/pacman.d/mirrorlist && pacman -Syy --noconfirm && pacman -S --noconfirm base-devel git sudo shadow",
