@@ -19,7 +19,7 @@
   "onCreateCommand": "useradd -m -s /bin/bash vscode && echo 'vscode ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers && echo 'Server=https://archive.archlinux.org/repos/2026/08/04/$repo/os/$arch' > /etc/pacman.d/mirrorlist && pacman -Syy --noconfirm && pacman -S --noconfirm base-devel git sudo shadow",
 
   // 5. Build constraints and stable swap file assignment inside the /tmp mount volume
-  "postCreateCommand": "echo 'MAKEFLAGS=\"-j2\"' >> /etc/makepkg.conf && echo 'COMPRESSXZ=(xz -c -z --threads=2 -)' >> /etc/makepkg.conf && dd if=/dev/zero of=/tmp/swapfile bs=1M count=4096 && chmod 600 /tmp/swapfile && mkswap /tmp/swapfile",
+  "postCreateCommand": "echo 'MAKEFLAGS=\"-j2\"' >> /etc/makepkg.conf && echo 'COMPRESSXZ=(xz -c -z --threads=2 -)' >> /etc/makepkg.conf && dd if=/dev/zero of=/tmp/swapfile bs=1M count=8192 && chmod 600 /tmp/swapfile && mkswap /tmp/swapfile",
 
   // 6. Mount and activate the virtual memory space automatically on instance bootup
   "postStartCommand": "swapon /tmp/swapfile || true",
