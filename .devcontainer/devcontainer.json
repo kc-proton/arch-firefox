@@ -22,7 +22,7 @@
   "postCreateCommand": "sudo sh -c 'echo \"MAKEFLAGS=\\\"-j2\\\"\" >> /etc/makepkg.conf' && sudo sh -c 'echo \"COMPRESSXZ=(xz -c -z --threads=2 -)\" >> /etc/makepkg.conf' && sudo dd if=/dev/zero of=/tmp/swapfile bs=1M count=4096 && sudo chmod 600 /tmp/swapfile && sudo mkswap /tmp/swapfile",
 
   // 6. Mount and activate the fallback swapfile automatically on startup
-  "postStartCommand": "sudo swapon /swapfile || true",
+  "postStartCommand": "sudo swapon /tmp/swapfile || true",
   
    
 
